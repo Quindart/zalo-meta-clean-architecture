@@ -2,29 +2,62 @@ pipeline {
     agent any
 
     stages {
+        stage('Preparation') {
+            steps {
+                echo 'Preparing workspace and environment...'
+            }
+        }
         stage('Checkout Code') {
             steps {
                 git branch: 'PROD', url: 'https://github.com/Quindart/zalo-meta-api.git'
             }
         }
 
-        stage('Copy .env file') {
+        stage('Setup Environment Variables') {
             steps {
-                configFileProvider([configFile(fileId: 'zalo-meta-api-production', targetLocation: '.env')]) {
+                configFileProvider([configFile(fileId: 'zalo-meta-clean-architecture-production', targetLocation: '.env')]) {
                     sh 'ls -la && cat .env' 
                 }
             }
         }
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    sh '''
+                    docker-compose build
+                    '''
+                }
+            }
+        }
 
-        stage('Build and Restart Docker Containers') {
+        stage('Remove Old Containers') {
             steps {
                 script {
                     sh '''
                     docker-compose down
-                    docker-compose up --build -d
                     '''
                 }
             }
+        }
+
+        stage('Deploy Application') {
+            steps {
+                script {
+                    sh '''
+                    docker-compose up -d
+                    '''
+                }
+            }
+        }
+       
+    }
+
+      post {
+        success {
+            echo 'Deployment successful!'
+        }
+        failure {
+            echo 'Deployment failed!'
         }
     }
 }
