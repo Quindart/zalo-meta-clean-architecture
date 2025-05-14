@@ -9,7 +9,7 @@ pipeline {
         }
         stage('Checkout Code') {
             steps {
-                git branch: 'PROD', url: 'https://github.com/Quindart/zalo-meta-api.git'
+                git branch: 'PROD', url: 'https://github.com/Quindart/zalo-meta-clean-architecture'
             }
         }
 
