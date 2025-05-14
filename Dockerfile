@@ -16,6 +16,8 @@ RUN npm install --legacy-peer-deps
 # Tái xây dựng bcrypt và sharp để đảm bảo tương thích
 RUN npm rebuild bcrypt sharp --build-from-source
 
+RUN npm run build
+
 COPY . .
 
 EXPOSE 5000
